@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Liste des patients</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .actions-top {
+      margin-bottom: 20px;
+    }
+
+    a.button {
+      display: inline-block;
+      padding: 10px 14px;
+      background-color: #2d6cdf;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #cccccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f3f3f3;
+    }
+
+    a.link-action {
+      color: #2d6cdf;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<h1>Liste des patients</h1>
+
+<div class="actions-top">
+  <a class="button" th:href="@{/patients/add}">Ajouter un patient</a>
+</div>
+
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Prénom</th>
+    <th>Nom</th>
+    <th>Date de naissance</th>
+    <th>Genre</th>
+    <th>Adresse</th>
+    <th>Téléphone</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="patient : ${patients}">
+    <td th:text="${patient.id}"></td>
+    <td th:text="${patient.firstName}"></td>
+    <td th:text="${patient.lastName}"></td>
+    <td th:text="${patient.birthDate}"></td>
+    <td th:text="${patient.gender}"></td>
+    <td th:text="${patient.address}"></td>
+    <td th:text="${patient.phone}"></td>
+    <td>
+      <a class="link-action" th:href="@{/patients/update/{id}(id=${patient.id})}">Modifier</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">Formulaire patient</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        form {
+            max-width: 600px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            margin-top: 20px;
+        }
+
+        button, a {
+            display: inline-block;
+            padding: 10px 14px;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #2d6cdf;
+            color: white;
+        }
+
+        a {
+            background-color: #cccccc;
+            color: black;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="${pageTitle}">Formulaire patient</h1>
+
+<form th:action="@{${formAction}}" th:object="${patient}" method="post">
+    <label for="firstName">Prénom</label>
+    <input id="firstName" type="text" th:field="*{firstName}" required>
+
+    <label for="lastName">Nom</label>
+    <input id="lastName" type="text" th:field="*{lastName}" required>
+
+    <label for="birthDate">Date de naissance</label>
+    <input id="birthDate" type="date" th:field="*{birthDate}" required>
+
+    <label for="gender">Genre</label>
+    <select id="gender" th:field="*{gender}" required>
+        <option value="">-- Sélectionner --</option>
+        <option value="M">M</option>
+        <option value="F">F</option>
+    </select>
+
+    <label for="address">Adresse</label>
+    <input id="address" type="text" th:field="*{address}">
+
+    <label for="phone">Téléphone</label>
+    <input id="phone" type="text" th:field="*{phone}">
+
+    <div class="buttons">
+        <button type="submit">Enregistrer</button>
+        <a th:href="@{/patients}">Retour</a>
+    </div>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  patient-service:
+    build: ./patient-service
+    container_name: patient-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/medilabo_patient?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Jaipastropconfiance13#
+    restart: unless-stopped
+
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - patient-service
+    restart: unless-stopped
+
+  ui-service:
+    build: ./ui-service
+    container_name: ui-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - gateway-service
+    restart: unless-stopped
