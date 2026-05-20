@@ -78,7 +78,9 @@
     <td th:text="${patient.address}"></td>
     <td th:text="${patient.phone}"></td>
     <td>
-      <a class="link-action" th:href="@{/patients/update/{id}(id=${patient.id})}">Modifier</a>
+      <a class="link-action" th:href="@{/patients/{id}(id=${patient.id})}">
+        Ouvrir la fiche
+      </a>
     </td>
   </tr>
   </tbody>

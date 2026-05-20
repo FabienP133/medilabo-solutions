@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  mongodb:
+    image: mongo:latest
+    container_name: medilabo-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+
   patient-service:
     build: ./patient-service
     container_name: patient-service
@@ -12,6 +21,19 @@ services:
       SPRING_DATASOURCE_PASSWORD: Jaipastropconfiance13#
     restart: unless-stopped
 
+  notes-service:
+    build: ./notes-service
+    container_name: notes-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: medilabo_notes
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
   gateway-service:
     build: ./gateway-service
     container_name: gateway-service
@@ -19,6 +41,7 @@ services:
       - "8081:8081"
     depends_on:
       - patient-service
+      - notes-service
     restart: unless-stopped
 
   ui-service:
@@ -29,3 +52,6 @@ services:
     depends_on:
       - gateway-service
     restart: unless-stopped
+
+volumes:
+  mongodb_data:

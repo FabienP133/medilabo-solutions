@@ -1,5 +1,6 @@
 package com.medilabo.ui.controller;
 
+import com.medilabo.ui.model.Note;
 import com.medilabo.ui.model.Patient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -28,8 +29,55 @@ public class PatientUiController {
                 .uri("/api/patients")
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
+
         model.addAttribute("patients", patients);
         return "patients";
+    }
+
+    @GetMapping("/{id}")
+    public String showPatientPage(@PathVariable Integer id, Model model) {
+        Patient patient = restClient.get()
+                .uri("/api/patients/{id}", id)
+                .retrieve()
+                .body(Patient.class);
+
+        List<Note> notes = restClient.get()
+                .uri("/api/notes/patient/{id}", id)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
+        Note newNote = new Note();
+        newNote.setPatientId(id);
+
+        model.addAttribute("patient", patient);
+        model.addAttribute("notes", notes);
+        model.addAttribute("newNote", newNote);
+
+        return "patient-page";
+    }
+
+    @PostMapping("/{id}/update")
+    public String updatePatient(@PathVariable Integer id, @ModelAttribute Patient patient) {
+        restClient.put()
+                .uri("/api/patients/{id}", id)
+                .body(patient)
+                .retrieve()
+                .toBodilessEntity();
+
+        return "redirect:/patients/" + id;
+    }
+
+    @PostMapping("/{id}/notes")
+    public String addNote(@PathVariable Integer id, @ModelAttribute Note note) {
+        note.setPatientId(id);
+
+        restClient.post()
+                .uri("/api/notes")
+                .body(note)
+                .retrieve()
+                .toBodilessEntity();
+
+        return "redirect:/patients/" + id;
     }
 
     @GetMapping("/add")
@@ -47,29 +95,7 @@ public class PatientUiController {
                 .body(patient)
                 .retrieve()
                 .toBodilessEntity();
-        return "redirect:/patients";
-    }
 
-    @GetMapping("/update/{id}")
-    public String showUpdateForm(@PathVariable Integer id, Model model) {
-        Patient patient = restClient.get()
-                .uri("/api/patients/{id}", id)
-                .retrieve()
-                .body(Patient.class);
-
-        model.addAttribute("patient", patient);
-        model.addAttribute("formAction", "/patients/update/" + id);
-        model.addAttribute("pageTitle", "Modifier un patient");
-        return "patient-form";
-    }
-
-    @PostMapping("/update/{id}")
-    public String updatePatient(@PathVariable Integer id, @ModelAttribute Patient patient) {
-        restClient.put()
-                .uri("/api/patients/{id}", id)
-                .body(patient)
-                .retrieve()
-                .toBodilessEntity();
         return "redirect:/patients";
     }
 }
