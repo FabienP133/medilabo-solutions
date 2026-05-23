@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
+import com.medilabo.ui.model.AssessmentResult;
 
 import java.util.List;
 
@@ -46,12 +47,18 @@ public class PatientUiController {
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
 
+        AssessmentResult assessmentResult = restClient.get()
+                .uri("/api/assessments/patient/{id}", id)
+                .retrieve()
+                .body(AssessmentResult.class);
+
         Note newNote = new Note();
         newNote.setPatientId(id);
 
         model.addAttribute("patient", patient);
         model.addAttribute("notes", notes);
         model.addAttribute("newNote", newNote);
+        model.addAttribute("assessmentResult", assessmentResult);
 
         return "patient-page";
     }

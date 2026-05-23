@@ -34,6 +34,17 @@ services:
       - mongodb
     restart: unless-stopped
 
+  assessment-service:
+    build: ./assessment-service
+    container_name: assessment-service
+    ports:
+      - "8084:8084"
+    environment:
+      GATEWAY_BASE_URL: http://gateway-service:8081
+    depends_on:
+      - gateway-service
+    restart: unless-stopped
+
   gateway-service:
     build: ./gateway-service
     container_name: gateway-service
@@ -49,8 +60,11 @@ services:
     container_name: ui-service
     ports:
       - "8080:8080"
+    environment:
+      GATEWAY_BASE_URL: http://gateway-service:8081
     depends_on:
       - gateway-service
+      - assessment-service
     restart: unless-stopped
 
 volumes:

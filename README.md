@@ -11,7 +11,8 @@ L’application permet actuellement :
 - d’ajouter un patient ;
 - de modifier un patient ;
 - de consulter les notes médicales d’un patient ;
-- d’ajouter une note médicale à un patient.
+- d’ajouter une note médicale à un patient ;
+- d’évaluer le niveau de risque diabète d’un patient.
 
 ---
 
@@ -21,6 +22,7 @@ Le projet est structuré en plusieurs microservices :
 
 - `patient-service` : gestion des patients avec une base SQL MySQL
 - `notes-service` : gestion des notes médicales avec une base NoSQL MongoDB
+- `assessment-service` : évaluation du risque diabète
 - `gateway-service` : point d’entrée unique via Spring Cloud Gateway
 - `ui-service` : interface utilisateur avec Thymeleaf
 
@@ -50,6 +52,7 @@ Le projet est structuré en plusieurs microservices :
 NeuviemeProjet/
 ├── patient-service/
 ├── notes-service/
+├── assessment-service/
 ├── gateway-service/
 ├── ui-service/
 ├── docker-compose.yml
@@ -95,12 +98,35 @@ Fonctionnalités :
 
 ---
 
+## Fonctionnalités réalisées - Sprint 3
+
+Le Sprint 3 ajoute l’évaluation du risque diabète.
+
+Fonctionnalités :
+- création du microservice `assessment-service`
+- récupération des informations patient via la gateway
+- récupération des notes médicales via la gateway
+- analyse des termes déclencheurs présents dans les notes
+- calcul du niveau de risque diabète selon l’âge, le genre et le nombre de termes déclencheurs
+- exposition d’une API REST pour l’évaluation du risque
+- routage des appels d’évaluation via la gateway
+- affichage du niveau de risque sur la fiche patient dans `ui-service`
+
+Niveaux de risque gérés :
+- `None`
+- `Borderline`
+- `In Danger`
+- `Early onset`
+
+---
+
 ## Ports utilisés
 
 - `ui-service` : `8080`
 - `gateway-service` : `8081`
 - `patient-service` : `8082`
 - `notes-service` : `8083`
+- `assessment-service` : `8084`
 - MySQL : `3306`
 - MongoDB : `27017`
 
@@ -136,6 +162,8 @@ Collection principale :
 notes
 ```
 
+Le microservice `assessment-service` ne possède pas de base de données dédiée.
+
 ---
 
 ## Endpoints principaux
@@ -154,6 +182,12 @@ PUT  http://localhost:8081/api/patients/{id}
 ```http
 GET  http://localhost:8081/api/notes/patient/{patientId}
 POST http://localhost:8081/api/notes
+```
+
+### Évaluation du risque via gateway
+
+```http
+GET http://localhost:8081/api/assessments/patient/{patientId}
 ```
 
 ---
@@ -185,7 +219,8 @@ Lancer les services dans cet ordre :
 1. `patient-service`
 2. `notes-service`
 3. `gateway-service`
-4. `ui-service`
+4. `assessment-service`
+5. `ui-service`
 
 ### 4. Accéder à l’application
 
@@ -205,6 +240,12 @@ API gateway notes :
 
 ```text
 http://localhost:8081/api/notes/patient/{patientId}
+```
+
+API gateway évaluation :
+
+```text
+http://localhost:8081/api/assessments/patient/{patientId}
 ```
 
 ---
@@ -236,6 +277,7 @@ docker compose up --build
 À ce stade, le fichier `docker-compose.yml` contient :
 - `patient-service`
 - `notes-service`
+- `assessment-service`
 - `gateway-service`
 - `ui-service`
 - un conteneur MongoDB
@@ -254,6 +296,13 @@ Les patients de test utilisés sont :
 - `TestEarlyOnset`
 
 Les notes médicales associées sont stockées dans MongoDB et rattachées aux patients via leur `patientId`.
+
+Résultats attendus pour l’évaluation du risque :
+
+- `TestNone` : `None`
+- `TestBorderline` : `Borderline`
+- `TestInDanger` : `In Danger`
+- `TestEarlyOnset` : `Early onset`
 
 ---
 
